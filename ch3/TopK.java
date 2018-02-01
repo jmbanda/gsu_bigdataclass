@@ -13,7 +13,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
-public class TopKDriver {
+public class TopK {
 
         public static class MRDPUtils {
 
@@ -114,13 +114,13 @@ public class TopKDriver {
 		String[] otherArgs = new GenericOptionsParser(conf, args)
 				.getRemainingArgs();
 		if (otherArgs.length != 3) {
-			System.err.println("Usage: TopKDriver <k> <in> <out>");
+			System.err.println("Usage: TopK <k> <in> <out>");
 			System.exit(2);
 		}
-		conf.set("k value of Top-k query",otherArgs[0])
+		conf.set("k value of Top-k query",otherArgs[0]);
 
 		Job job = new Job(conf, "Top K Users by Reputation");
-		job.setJarByClass(TopKDriver.class);
+		job.setJarByClass(TopK.class);
 		job.setMapperClass(SOTopKMapper.class);
 		job.setReducerClass(SOTopKReducer.class);
 		job.setNumReduceTasks(1);
