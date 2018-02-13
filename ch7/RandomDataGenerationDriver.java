@@ -71,7 +71,8 @@ public class RandomDataGenerationDriver {
 		}
 
 		public static void setRandomWordList(Job job, Path file) {
-			DistributedCache.addCacheFile(file.toUri(), job.getConfiguration());
+			//DistributedCache.addCacheFile(file.toUri(), job.getConfiguration());
+			job.addCacheFile(file.toUri());
 		}
 
 		public static class RandomStackoverflowRecordReader extends
@@ -103,16 +104,17 @@ public class RandomDataGenerationDriver {
 				}
 
 				// Get the list of random words from the DistributedCache
-				URI[] files = DistributedCache.getCacheFiles(context
-						.getConfiguration());
-
+				//URI[] files = DistributedCache.getCacheFiles(context.getConfiguration());
+				Path[] files = context.getLocalCacheFiles();
 				if (files.length == 0) {
 					throw new InvalidParameterException(
 							"Random word list not set in cache.");
 				} else {
 					// Read the list of random words into a list
-					BufferedReader rdr = new BufferedReader(new FileReader(
-							files[0].toString()));
+					// CHANGES: Original code below
+					// BufferedReader rdr = new BufferedReader(new FileReader(files[0].toString()));
+					// CHANGES: Hacky code for this to work on our setup
+					BufferedReader rdr = new BufferedReader(new FileReader("/home/ec2-user/class_examples/ch7/thousandwords.txt"));
 
 					String line;
 					while ((line = rdr.readLine()) != null) {
