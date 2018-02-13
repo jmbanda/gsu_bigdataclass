@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.net.URI;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -131,6 +132,8 @@ public class JobChainingDriver {
 			try {
 				//Path[] files = DistributedCache.getLocalCacheFiles(context.getConfiguration());
 				Path[] files = context.getLocalCacheFiles();
+				FileSystem fs = FileSystem.get(context.getConfiguration());
+        			//Path path = new Path(cacheFiles[0].toString());
 
 				if (files == null || files.length == 0) {
 					throw new RuntimeException(
