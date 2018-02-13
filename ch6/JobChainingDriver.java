@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -128,8 +129,8 @@ public class JobChainingDriver {
 			mos = new MultipleOutputs<Text, Text>(context);
 
 			try {
-				Path[] files = DistributedCache.getLocalCacheFiles(context
-						.getConfiguration());
+				//Path[] files = DistributedCache.getLocalCacheFiles(context.getConfiguration());
+				Path[] files = context.getLocalCacheFiles();
 
 				if (files == null || files.length == 0) {
 					throw new RuntimeException(
@@ -138,11 +139,13 @@ public class JobChainingDriver {
 
 				// Read all files in the DistributedCache
 				for (Path p : files) {
-					BufferedReader rdr = new BufferedReader(
-							new InputStreamReader(
-									new GZIPInputStream(new FileInputStream(
-											new File(p.toString())))));
-
+					System.out.println(p.toString());
+					// CHANGES:  Book code below
+					//BufferedReader rdr = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(new File(p.toString())))));
+					// CHANGES: Hadoop 2.7.5 working code
+					//BufferedReader rdr = new BufferedReader(new FileReader(p.toString()));
+					// CHANGES: Hacky work around to get this to work
+					BufferedReader rdr = new BufferedReader(new FileReader("/home/ec2-user/Users.xml"));
 					String line;
 					// For each record in the user file
 					while ((line = rdr.readLine()) != null) {
@@ -274,8 +277,8 @@ public class JobChainingDriver {
 			// Add the user files to the DistributedCache
 			FileStatus[] userFiles = FileSystem.get(conf).listStatus(userInput);
 			for (FileStatus status : userFiles) {
-				DistributedCache.addCacheFile(status.getPath().toUri(),
-						binningJob.getConfiguration());
+				binningJob.addCacheFile(status.getPath().toUri());   //new Path(filename).toUri());
+				//stributedCache.addCacheFile(status.getPath().toUri(),binningJob.getConfiguration());
 			}
 
 			// Execute job and grab exit code
